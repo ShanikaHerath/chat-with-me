@@ -26,7 +26,7 @@ export default function App() {
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
-	
+
 	// Theme State ("dark" | "light")
 	const [theme, setTheme] = useState("dark");
 
@@ -62,18 +62,11 @@ export default function App() {
 				{
 					id: "initial-ai",
 					type: "ai",
-					content: `Hi there! I am Lakma, your new intelligent chat assistant.
+					content: `Hi there! I am Lakma, your intelligent chat assistant.
 
-I have been redesigned with a premium, sleek **Blue and Black theme** and modern glassmorphic interface elements. Here are some of the features you can explore:
-* **Multiple Conversations:** Create new chats or switch/delete older ones in the sidebar.
-* **Model Selector:** Switch models at the top header (Core, Pro, or Elite).
-* **Theme Switcher:** Toggle between light and dark modes.
-* **Image Upload:** Attach images to prompts and see them displayed in chat!
-* **Voice Speech Reader:** Click the speaker icon on any of my messages to hear me speak.
-* **Simulated Dictation:** Click the Mic icon to dictate messages automatically.
-* **Action Tools:** Copy answers or give helpful thumbs-up/down ratings.
+You can manage chats, switch models, upload images, or use voice dictation and speech tools.
 
-What would you like to explore today?`
+How can I help you today?`
 				}
 			]
 		}
@@ -428,7 +421,7 @@ Feel free to refine your question or ask me to perform tasks like listing action
 	return (
 		<div className="lakma-container">
 			{/* Left Sidebar Component */}
-			<Sidebar 
+			<Sidebar
 				sidebarOpen={sidebarOpen}
 				setSidebarOpen={setSidebarOpen}
 				conversations={conversations.filter(c => c.messages.length > 0)}
@@ -443,7 +436,7 @@ Feel free to refine your question or ask me to perform tasks like listing action
 			{/* Main Content Pane */}
 			<main className="lakma-main">
 				{/* Header Component */}
-				<Header 
+				<Header
 					sidebarOpen={sidebarOpen}
 					setSidebarOpen={setSidebarOpen}
 					selectedModel={selectedModel}
@@ -462,7 +455,7 @@ Feel free to refine your question or ask me to perform tasks like listing action
 				{messages.length === 0 ? (
 					<div className="chat-body-container" ref={chatScrollerRef}>
 						<div className="chat-content-width">
-							<WelcomeScreen 
+							<WelcomeScreen
 								suggestions={suggestions}
 								handleSubmit={handleSubmit}
 								userProfile={userProfile}
@@ -470,7 +463,7 @@ Feel free to refine your question or ask me to perform tasks like listing action
 						</div>
 					</div>
 				) : (
-					<MessageList 
+					<MessageList
 						messages={messages}
 						isLoading={isLoading}
 						chatScrollerRef={chatScrollerRef}
@@ -485,7 +478,7 @@ Feel free to refine your question or ask me to perform tasks like listing action
 				)}
 
 				{/* Fixed Bottom Input Area Component */}
-				<InputPanel 
+				<InputPanel
 					input={input}
 					setInput={setInput}
 					attachedImage={attachedImage}
@@ -502,7 +495,7 @@ Feel free to refine your question or ask me to perform tasks like listing action
 			</main>
 
 			{/* Profile Settings Modal */}
-			<ProfileModal 
+			<ProfileModal
 				isOpen={profileModalOpen}
 				onClose={() => setProfileModalOpen(false)}
 				userProfile={userProfile}
