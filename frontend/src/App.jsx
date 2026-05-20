@@ -46,7 +46,7 @@ export default function App() {
 	const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
 	const [selectedModel, setSelectedModel] = useState({
 		id: "gemini-2.5-flash",
-		name: "Gemini 2.5 Flash",
+		name: "AI",
 		desc: "Fast, multimodal model for general tasks"
 	});
 
@@ -324,60 +324,60 @@ How can I help you today?`
 			headers: {
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({ 
+			body: JSON.stringify({
 				prompt: promptToSend,
 				model: selectedModel.id,
 				image: userMessage.image
 			})
 		})
-		.then(response => {
-			if (!response.ok) {
-				return response.json().then(err => {
-					throw new Error(err.error || `HTTP error ${response.status}`);
-				});
-			}
-			return response.json();
-		})
-		.then(data => {
-			const aiMessage = {
-				id: `msg-${randomID()}`,
-				type: "ai",
-				content: data.response + imageFootnote
-			};
-
-			setConversations(prev => prev.map(c => {
-				if (c.id === currentChatId) {
-					return {
-						...c,
-						messages: [...updatedMessages, aiMessage]
-					};
+			.then(response => {
+				if (!response.ok) {
+					return response.json().then(err => {
+						throw new Error(err.error || `HTTP error ${response.status}`);
+					});
 				}
-				return c;
-			}));
-		})
-		.catch(error => {
-			console.error("API Call Failed:", error);
-			const aiMessage = {
-				id: `msg-${randomID()}`,
-				type: "ai",
-				content: `⚠️ **Error generating response:** ${error.message}
+				return response.json();
+			})
+			.then(data => {
+				const aiMessage = {
+					id: `msg-${randomID()}`,
+					type: "ai",
+					content: data.response + imageFootnote
+				};
+
+				setConversations(prev => prev.map(c => {
+					if (c.id === currentChatId) {
+						return {
+							...c,
+							messages: [...updatedMessages, aiMessage]
+						};
+					}
+					return c;
+				}));
+			})
+			.catch(error => {
+				console.error("API Call Failed:", error);
+				const aiMessage = {
+					id: `msg-${randomID()}`,
+					type: "ai",
+					content: `⚠️ **Error generating response:** ${error.message}
 
 Please make sure the backend server is running on port 5000, and your Hugging Face API token is correctly set in the backend's \`.env\` file.`
-			};
+				};
 
-			setConversations(prev => prev.map(c => {
-				if (c.id === currentChatId) {
-					return {
-						...c,
-						messages: [...updatedMessages, aiMessage]
-					};
-				}
-				return c;
-			}));
-		})
-		.finally(() => {
-			setIsLoading(false);
-		});
+				setConversations(prev => prev.map(c => {
+					if (c.id === currentChatId) {
+						return {
+							...c,
+							messages: [...updatedMessages, aiMessage]
+						};
+					}
+					return c;
+				}));
+			})
+			.finally(() => {
+				setIsLoading(false);
+			});
 	};
 
 	const handleKeyDown = (e) => {
