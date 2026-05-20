@@ -463,13 +463,13 @@ body {
 .header-info h1 {
 	font-family: var(--font-title);
 	font-size: 1.15rem;
-	font-weight: 600;
+	font-weight: 400;
 	color: var(--text-primary);
 	line-height: 1.2;
 }
 
 .header-info p {
-	font-size: 0.78rem;
+	font-size: 0.68rem;
 	color: var(--text-muted);
 	margin-top: 0.15rem;
 }

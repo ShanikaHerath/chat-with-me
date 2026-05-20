@@ -19,34 +19,34 @@ export default function Header({
 		<header className="header">
 			<div className="header-container">
 				{/* Menu toggle button */}
-				<button 
-					className="menu-toggle header-menu-btn" 
+				<button
+					className="menu-toggle header-menu-btn"
 					onClick={() => setSidebarOpen(!sidebarOpen)}
 					aria-label="Toggle Menu"
 				>
 					<Menu size={22} />
 				</button>
-				
+
 				{/* Avatar container */}
-				<div 
-					className="avatar-container" 
-					onClick={handleProfileClick} 
+				<div
+					className="avatar-container"
+					onClick={handleProfileClick}
 					style={{ cursor: "pointer" }}
 					title="Profile settings"
 				>
 					<div className="avatar">
 						{userProfile.avatarImage ? (
-							<img 
-								src={userProfile.avatarImage} 
-								alt="Profile" 
-								style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} 
+							<img
+								src={userProfile.avatarImage}
+								alt="Profile"
+								style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }}
 							/>
 						) : (
 							"L"
 						)}
 					</div>
 				</div>
-				
+
 				{/* Header title & subtitle */}
 				<div className="header-info">
 					<h1>Lakma Assistant</h1>
@@ -58,13 +58,13 @@ export default function Header({
 					<span className="pulse-dot"></span>
 					<span className="status-label">LAKMA ACTIVE</span>
 				</div>
-				
+
 				{/* Header right tools */}
 				<div className="header-right-controls" style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.8rem" }}>
 					{/* Model Selector Dropdown */}
 					<div className="model-selector-container">
-						<button 
-							className="model-selector-btn" 
+						<button
+							className="model-selector-btn"
 							onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
 						>
 							<span>{selectedModel.name.replace("Lakma ", "")}</span>
@@ -74,8 +74,8 @@ export default function Header({
 						{modelDropdownOpen && (
 							<div className="model-dropdown">
 								{models.map((m) => (
-									<div 
-										key={m.id} 
+									<div
+										key={m.id}
 										className="model-dropdown-item"
 										onClick={() => {
 											setSelectedModel(m);
@@ -91,7 +91,7 @@ export default function Header({
 					</div>
 
 					{/* Theme Changer */}
-					<button 
+					<button
 						className="theme-toggle-btn"
 						onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
 						aria-label="Toggle Theme"
