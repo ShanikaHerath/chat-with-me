@@ -309,96 +309,37 @@ How can I help you today?`
 		setAttachedImage(null);
 		setIsLoading(true);
 
-		// Generate dynamic responses
-		setTimeout(() => {
-			let aiResponse = "";
-			const prompt = queryText.toLowerCase();
+		// Generate dynamic responses from the backend Hugging Face API
+		let promptToSend = queryText;
+		if (!promptToSend.trim() && attachedImage) {
+			promptToSend = "Please analyze the attached image.";
+		}
 
-			if (prompt.includes("quantum")) {
-				aiResponse = `### Quantum Computing Analogy 🌀
+		let imageFootnote = "";
+		if (attachedImage) {
+			imageFootnote = "\n\n*(Note: Image inputs are not supported by the current GPT-2 model)*";
+		}
 
-Think of a normal computer like a **light switch** that can only be either **OFF (0)** or **ON (1)**. Every calculation is just a series of switches flipping.
-
-A quantum computer is more like a **spinning coin**. While it's spinning, it is a blur of both heads and tails at the same time. This is called **Superposition**.
-Because it can explore many combinations simultaneously, it can solve massive calculations in seconds that would take normal supercomputers thousands of years!
-
-#### Key Concepts:
-1. **Qubits:** Unlike standard bits (0 or 1), qubits hold multiple states simultaneously.
-2. **Entanglement:** Qubits can link together instantaneously across distance.
-3. **Interference:** Boosting right answers and canceling wrong ones to find the final result.`;
-			} else if (prompt.includes("time traveler")) {
-				aiResponse = `### The Butterly Effect in 1920 🕰️
-
-Edward stepped out of the temporal pod, the cool London morning air filling his lungs. It was September 12, 1920. 
-His only mission was to observe. But as he adjusted his tweed coat, a brass button broke off, rolled down the pavement, and fell into a storm drain. Edward shrugged, returned to the pod, and traveled back to 2026.
-
-When the pod door slid open, London looked different. Hovercars didn't exist. Instead, the streets were filled with steam-powered carriages and elaborate clockwork traffic signals. 
-
-A newsboy ran past: *"Read all about it! Clockwork Empire celebrates 100 years of Mechanical Harmony!"*
-
-Edward realized that the brass button had blocked a water pipe, causing a small flood in a basement workshop where an engineer named William had been developing electronic circuits. Frustrated by the water damage, William abandoned electronics and designed mechanical clockwork computation instead. Edward’s tiny button had completely derailed the age of digital computing!`;
-			} else if (prompt.includes("useeffect") || prompt.includes("react")) {
-				aiResponse = `### React useEffect Infinite Loops 💻
-
-An infinite loop in \`useEffect\` happens when you update a state inside the hook, and that state is also listed in the hook's dependency array. 
-
-#### The Problem Code:
-\`\`\`javascript
-// ❌ This triggers an infinite loop!
-useEffect(() => {
-  setCount(count + 1); // Updates count state
-}, [count]); // Triggered every time count changes
-\`\`\`
-
-#### The Fix:
-You must remove the state updater dependency, or use functional state updates if you only want to run it once:
-
-\`\`\`javascript
-// ✅ Correct approach (Run once on mount)
-useEffect(() => {
-  // Fetch data or set state safely
-  console.log("Component mounted");
-}, []); // Empty dependencies array
-\`\`\`
-
-Or use functional state updates to avoid adding the state itself as a dependency:
-\`\`\`javascript
-// ✅ Safe incrementing count
-useEffect(() => {
-  const interval = setInterval(() => {
-    setCount(prev => prev + 1); // Reads prev state safely
-  }, 1000);
-  return () => clearInterval(interval);
-}, []); // No need to depend on count!
-\`\`\`
-`;
-			} else if (attachedImage) {
-				aiResponse = `I've analyzed the image you uploaded! 📸
-
-Based on my visual processing algorithms, this image represents high-quality visual data. 
-In a production integration, I would extract:
-* **Color Palette:** Dominated by the gradients and tones present in your image file.
-* **Objects / Shapes:** Detected shapes, text outlines, and pixel composition.
-* **Suggested Context:** This image context fits directly with your prompt: *"${queryText || "Analyze this image"}"*.
-
-Let me know if you would like me to perform OCR text extraction or search for similar color layouts!`;
-			} else {
-				aiResponse = `Here is a custom response from **${selectedModel.name}**! ⚡
-
-You asked: *"${queryText}"*
-
-I can help you with multiple tasks:
-* **Research:** Breaking down complex academic papers or news.
-* **Coding:** Generating HTML, CSS, JavaScript, Python, or SQL scripts.
-* **Creative Writing:** Drafting essays, follow-ups, or marketing copy.
-
-Feel free to refine your question or ask me to perform tasks like listing action items or converting code blocks!`;
+		fetch("http://localhost:5000/api/chat", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({ prompt: promptToSend })
+		})
+		.then(response => {
+			if (!response.ok) {
+				return response.json().then(err => {
+					throw new Error(err.error || `HTTP error ${response.status}`);
+				});
 			}
-
+			return response.json();
+		})
+		.then(data => {
 			const aiMessage = {
 				id: `msg-${randomID()}`,
 				type: "ai",
-				content: aiResponse
+				content: data.response + imageFootnote
 			};
 
 			setConversations(prev => prev.map(c => {
@@ -410,8 +351,30 @@ Feel free to refine your question or ask me to perform tasks like listing action
 				}
 				return c;
 			}));
+		})
+		.catch(error => {
+			console.error("API Call Failed:", error);
+			const aiMessage = {
+				id: `msg-${randomID()}`,
+				type: "ai",
+				content: `⚠️ **Error generating response:** ${error.message}
+
+Please make sure the backend server is running on port 5000, and your Hugging Face API token is correctly set in the backend's \`.env\` file.`
+			};
+
+			setConversations(prev => prev.map(c => {
+				if (c.id === currentChatId) {
+					return {
+						...c,
+						messages: [...updatedMessages, aiMessage]
+					};
+				}
+				return c;
+			}));
+		})
+		.finally(() => {
 			setIsLoading(false);
-		}, 1800);
+		});
 	};
 
 	const handleKeyDown = (e) => {
@@ -425,88 +388,88 @@ Feel free to refine your question or ask me to perform tasks like listing action
 		<>
 			{showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
 			<div className="lakma-container">
-			{/* Left Sidebar Component */}
-			<Sidebar
-				sidebarOpen={sidebarOpen}
-				setSidebarOpen={setSidebarOpen}
-				conversations={conversations.filter(c => c.messages.length > 0)}
-				activeChatId={activeChatId}
-				handleSwitchChat={handleSwitchChat}
-				handleDeleteChat={handleDeleteChat}
-				handleNewChat={handleNewChat}
-				handleProfileClick={() => setProfileModalOpen(true)}
-				handleRenameChat={handleRenameChat}
-			/>
-
-			{/* Main Content Pane */}
-			<main className="lakma-main">
-				{/* Header Component */}
-				<Header
+				{/* Left Sidebar Component */}
+				<Sidebar
 					sidebarOpen={sidebarOpen}
 					setSidebarOpen={setSidebarOpen}
-					selectedModel={selectedModel}
-					setSelectedModel={setSelectedModel}
-					theme={theme}
-					setTheme={setTheme}
-					models={models}
-					modelDropdownOpen={modelDropdownOpen}
-					setModelDropdownOpen={setModelDropdownOpen}
-					userProfile={userProfile}
+					conversations={conversations.filter(c => c.messages.length > 0)}
+					activeChatId={activeChatId}
+					handleSwitchChat={handleSwitchChat}
+					handleDeleteChat={handleDeleteChat}
+					handleNewChat={handleNewChat}
 					handleProfileClick={() => setProfileModalOpen(true)}
-					activeChatTitle={activeChat ? activeChat.title : "New chat"}
+					handleRenameChat={handleRenameChat}
 				/>
 
-				{/* Chat Display Body / Welcome Screen */}
-				{messages.length === 0 ? (
-					<div className="chat-body-container" ref={chatScrollerRef}>
-						<div className="chat-content-width">
-							<WelcomeScreen
-								suggestions={suggestions}
-								handleSubmit={handleSubmit}
-								userProfile={userProfile}
-							/>
-						</div>
-					</div>
-				) : (
-					<MessageList
-						messages={messages}
-						isLoading={isLoading}
-						chatScrollerRef={chatScrollerRef}
-						copiedMessageId={copiedMessageId}
-						likedMessages={likedMessages}
-						dislikedMessages={dislikedMessages}
-						handleSpeechRead={handleSpeechRead}
-						handleCopyText={handleCopyText}
-						handleLike={handleLike}
-						handleDislike={handleDislike}
+				{/* Main Content Pane */}
+				<main className="lakma-main">
+					{/* Header Component */}
+					<Header
+						sidebarOpen={sidebarOpen}
+						setSidebarOpen={setSidebarOpen}
+						selectedModel={selectedModel}
+						setSelectedModel={setSelectedModel}
+						theme={theme}
+						setTheme={setTheme}
+						models={models}
+						modelDropdownOpen={modelDropdownOpen}
+						setModelDropdownOpen={setModelDropdownOpen}
+						userProfile={userProfile}
+						handleProfileClick={() => setProfileModalOpen(true)}
+						activeChatTitle={activeChat ? activeChat.title : "New chat"}
 					/>
-				)}
 
-				{/* Fixed Bottom Input Area Component */}
-				<InputPanel
-					input={input}
-					setInput={setInput}
-					attachedImage={attachedImage}
-					setAttachedImage={setAttachedImage}
-					isListening={isListening}
-					isLoading={isLoading}
-					handleSubmit={handleSubmit}
-					handleVoiceListening={handleVoiceListening}
-					fileInputRef={fileInputRef}
-					textareaRef={textareaRef}
-					handleFileSelect={handleFileSelect}
-					handleKeyDown={handleKeyDown}
+					{/* Chat Display Body / Welcome Screen */}
+					{messages.length === 0 ? (
+						<div className="chat-body-container" ref={chatScrollerRef}>
+							<div className="chat-content-width">
+								<WelcomeScreen
+									suggestions={suggestions}
+									handleSubmit={handleSubmit}
+									userProfile={userProfile}
+								/>
+							</div>
+						</div>
+					) : (
+						<MessageList
+							messages={messages}
+							isLoading={isLoading}
+							chatScrollerRef={chatScrollerRef}
+							copiedMessageId={copiedMessageId}
+							likedMessages={likedMessages}
+							dislikedMessages={dislikedMessages}
+							handleSpeechRead={handleSpeechRead}
+							handleCopyText={handleCopyText}
+							handleLike={handleLike}
+							handleDislike={handleDislike}
+						/>
+					)}
+
+					{/* Fixed Bottom Input Area Component */}
+					<InputPanel
+						input={input}
+						setInput={setInput}
+						attachedImage={attachedImage}
+						setAttachedImage={setAttachedImage}
+						isListening={isListening}
+						isLoading={isLoading}
+						handleSubmit={handleSubmit}
+						handleVoiceListening={handleVoiceListening}
+						fileInputRef={fileInputRef}
+						textareaRef={textareaRef}
+						handleFileSelect={handleFileSelect}
+						handleKeyDown={handleKeyDown}
+					/>
+				</main>
+
+				{/* Profile Settings Modal */}
+				<ProfileModal
+					isOpen={profileModalOpen}
+					onClose={() => setProfileModalOpen(false)}
+					userProfile={userProfile}
+					setUserProfile={setUserProfile}
 				/>
-			</main>
-
-			{/* Profile Settings Modal */}
-			<ProfileModal
-				isOpen={profileModalOpen}
-				onClose={() => setProfileModalOpen(false)}
-				userProfile={userProfile}
-				setUserProfile={setUserProfile}
-			/>
-		</div>
+			</div>
 		</>
 	);
 }
