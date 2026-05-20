@@ -135,8 +135,8 @@ body {
 	display: flex;
 	align-items: center;
 	gap: 0.8rem;
-	background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(8, 11, 18, 0.6) 100%);
-	color: var(--text-primary);
+	background: var(--accent-gradient);
+	color: white;
 	padding: 0.75rem 1.4rem;
 	border-radius: 50px;
 	font-weight: 600;
@@ -146,27 +146,27 @@ body {
 	margin: 0 auto 2rem auto;
 	width: fit-content;
 	min-width: 140px;
-	border: 1px solid rgba(59, 130, 246, 0.25);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+	border: 1px solid transparent;
+	box-shadow: var(--shadow-glow), 0 8px 25px rgba(37, 99, 235, 0.35);
 	letter-spacing: 0.01em;
 }
 
 .new-chat-btn svg {
 	transition: transform 0.3s ease, color 0.3s ease;
-	color: var(--accent-color);
+	color: white;
 }
 
 .new-chat-btn:hover {
-	background: var(--accent-gradient);
-	border-color: transparent;
-	color: white;
+	background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(8, 11, 18, 0.6) 100%);
+	border-color: rgba(59, 130, 246, 0.25);
+	color: var(--text-primary);
 	transform: translateY(-2px);
-	box-shadow: var(--shadow-glow), 0 8px 25px rgba(37, 99, 235, 0.35);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
 .new-chat-btn:hover svg {
 	transform: rotate(90deg);
-	color: white;
+	color: var(--accent-color);
 }
 
 .new-chat-btn:active {
@@ -175,19 +175,20 @@ body {
 }
 
 :root.light-theme .new-chat-btn {
-	background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(255, 255, 255, 0.8) 100%);
-	border-color: rgba(37, 99, 235, 0.2);
-	color: var(--text-primary);
-	box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);
+	background: var(--accent-gradient);
+	border-color: transparent;
+	color: white;
+	box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 :root.light-theme .new-chat-btn:hover {
-	background: var(--accent-gradient);
-	color: white;
+	background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(255, 255, 255, 0.8) 100%);
+	border-color: rgba(37, 99, 235, 0.2);
+	color: var(--text-primary);
 }
 
 :root.light-theme .new-chat-btn:hover svg {
-	color: white;
+	color: var(--accent-color);
 }
 
 .lakma-sidebar.collapsed .new-chat-btn {
@@ -1722,6 +1723,40 @@ body {
 		right: 8px;
 		width: auto;
 		z-index: 1000;
+	}
+
+	/* New Chat Button — gradient default, dark on hover (same as desktop) */
+	.new-chat-btn {
+		background: var(--accent-gradient) !important;
+		color: white !important;
+		border-color: transparent !important;
+		box-shadow: var(--shadow-glow), 0 6px 20px rgba(37, 99, 235, 0.3) !important;
+		padding: 0.65rem 1.2rem;
+		font-size: 0.82rem;
+		min-width: 120px;
+	}
+
+	.new-chat-btn svg {
+		color: white !important;
+	}
+
+	.new-chat-btn:hover,
+	.new-chat-btn:active {
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(8, 11, 18, 0.6) 100%) !important;
+		border-color: rgba(59, 130, 246, 0.25) !important;
+		color: var(--text-primary) !important;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+	}
+
+	.new-chat-btn:hover svg,
+	.new-chat-btn:active svg {
+		color: var(--accent-color) !important;
+	}
+
+	/* Collapsed sidebar circle button — same gradient */
+	.lakma-sidebar.collapsed .new-chat-btn {
+		background: var(--accent-gradient) !important;
+		box-shadow: var(--shadow-glow) !important;
 	}
 
 	/* Chat Messages List Padding */
