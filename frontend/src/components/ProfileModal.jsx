@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { X, Camera } from "lucide-react";
 
 export default function ProfileModal({
@@ -9,7 +9,7 @@ export default function ProfileModal({
 }) {
 	const [name, setName] = useState(userProfile.name);
 	const [email, setEmail] = useState(userProfile.email || "");
-	const [avatar, setAvatar] = useState(userProfile.avatar);
+	
 	const [avatarImage, setAvatarImage] = useState(userProfile.avatarImage || null);
 	const fileInputRef = useRef(null);
 

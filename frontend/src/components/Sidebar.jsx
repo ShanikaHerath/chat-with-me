@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Menu, Plus, MessageSquare, Trash2, HelpCircle, User, Edit2 } from "lucide-react";
 
 export default function Sidebar({

@@ -1,4 +1,3 @@
-import React from "react";
 import { Image as ImageIcon, Mic, Send, X } from "lucide-react";
 
 export default function InputPanel({

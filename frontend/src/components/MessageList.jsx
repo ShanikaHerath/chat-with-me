@@ -1,19 +1,18 @@
-import React from "react";
 import Markdown from "react-markdown";
-import { Bot, Volume2, Copy, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Volume2, Copy, ThumbsUp, ThumbsDown } from "lucide-react";
 
 const AIChatText = {
-	p({ node, ...rest }) {
+	p({ ...rest }) {
 		return <p className="ai-p" {...rest} />;
 	},
-	ul({ node, ...rest }) {
+	ul({ ...rest }) {
 		return <ul className="ai-ul" {...rest} />;
 	},
-	ol({ node, ...rest }) {
+	ol({ ...rest }) {
 		return <ol className="ai-ol" {...rest} />;
 	},
-	code({ node, inline, ...rest }) {
-		return <code className="ai-code" {...rest} />;
+	code({ className, children, ...rest }) {
+		return <code className={className} {...rest}>{children}</code>;
 	}
 };
 

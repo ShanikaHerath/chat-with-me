@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Compass, PenTool, Code2, Lightbulb } from "lucide-react";
 import "./App.css";
 
@@ -117,7 +117,8 @@ How can I help you today?`
 
 	// Active conversation messages selector
 	const activeChat = conversations.find(c => c.id === activeChatId) || conversations[0];
-	const messages = activeChat ? activeChat.messages : [];
+	const messages = activeChat?.messages || [];
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 
 	// Automatically load and persist active chat scroll
 	useEffect(() => {
@@ -229,7 +230,7 @@ How can I help you today?`
 	const handleSpeechRead = (text) => {
 		if ("speechSynthesis" in window) {
 			window.speechSynthesis.cancel(); // stop previous
-			const cleanText = text.replace(/[*#`_\-]/g, ""); // remove markdown noise
+			const cleanText = text.replace(/[*#`_-]/g, ""); // remove markdown noise
 			const utterance = new SpeechSynthesisUtterance(cleanText);
 			window.speechSynthesis.speak(utterance);
 		} else {

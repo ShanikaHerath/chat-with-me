@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function WelcomeScreen({ suggestions, handleSubmit, userProfile }) {
 	return (
 		<div className="welcome-screen">
