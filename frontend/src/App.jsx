@@ -45,15 +45,16 @@ export default function App() {
 	// Model Selection dropdown state
 	const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
 	const [selectedModel, setSelectedModel] = useState({
-		id: "core",
-		name: "Lakma Core",
-		desc: "Great for fast, everyday responses"
+		id: "gemini-2.5-flash",
+		name: "Gemini 2.5 Flash",
+		desc: "Fast, multimodal model for general tasks"
 	});
 
 	const models = [
-		{ id: "core", name: "Lakma Core", desc: "Great for fast, everyday responses" },
-		{ id: "pro", name: "Lakma Pro", desc: "Complex reasoning and coding tasks" },
-		{ id: "elite", name: "Lakma Elite", desc: "Our most capable intelligence model" }
+		{ id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", desc: "Fast, multimodal model for general tasks" },
+		{ id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", desc: "Complex reasoning and premium capabilities" },
+		{ id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", desc: "Efficient, low-latency multimodal model" },
+		{ id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", desc: "Highly capable model for complex analysis" }
 	];
 
 	// Conversations list state
@@ -316,16 +317,17 @@ How can I help you today?`
 		}
 
 		let imageFootnote = "";
-		if (attachedImage) {
-			imageFootnote = "\n\n*(Note: Image inputs are not supported by the current GPT-2 model)*";
-		}
 
 		fetch("http://localhost:5000/api/chat", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({ prompt: promptToSend })
+			body: JSON.stringify({ 
+				prompt: promptToSend,
+				model: selectedModel.id,
+				image: userMessage.image
+			})
 		})
 		.then(response => {
 			if (!response.ok) {

@@ -10,30 +10,56 @@ app.use(cors());
 app.use(express.json());
 
 /**
- * Queries the Hugging Face Inference API for GPT-2.
- * @param {string} prompt - The text to prompt the model.
- * @param {string} token - The Hugging Face API bearer token.
+ * Queries Google AI Studio's Gemini API.
+ * @param {string} prompt - The text prompt.
+ * @param {string} modelId - The Gemini model (e.g. gemini-2.5-flash, gemini-1.5-flash, etc.).
+ * @param {string} [imageBase64] - Optional base64 data URL for multimodal input.
+ * @param {string} apiKey - Google Gemini API key.
  */
-async function queryHuggingFace(prompt, token) {
-  if (!token || token === 'your_huggingface_api_token_here' || token.trim() === '') {
-    throw new Error("HUGGINGFACE_API_TOKEN is not configured in backend/.env");
+async function queryGemini(prompt, modelId, imageBase64, apiKey) {
+  if (!apiKey || apiKey === 'your_gemini_api_key_here' || apiKey.trim() === '') {
+    throw new Error("GEMINI_API_KEY is not configured in backend/.env");
   }
 
-  const response = await fetch('https://api-inference.huggingface.co/models/openai-community/gpt2', {
+  // Set default model if not provided or unknown
+  const validModels = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+  const activeModel = validModels.includes(modelId) ? modelId : 'gemini-2.5-flash';
+
+  const parts = [{ text: prompt }];
+
+  // If there is an image, parse and append it
+  if (imageBase64 && typeof imageBase64 === 'string' && imageBase64.startsWith('data:')) {
+    const match = imageBase64.match(/^data:([^;]+);base64,(.+)$/);
+    if (match) {
+      parts.push({
+        inlineData: {
+          mimeType: match[1],
+          data: match[2]
+        }
+      });
+    }
+  }
+
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${apiKey}`, {
     method: "POST",
-    headers: { 
-      "Authorization": `Bearer ${token}`,
+    headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ inputs: prompt })
+    body: JSON.stringify({
+      contents: [{ parts }]
+    })
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    let errorMessage = `Hugging Face API returned status ${response.status}`;
+    let errorMessage = `Gemini API returned status ${response.status}`;
     try {
       const errorJson = JSON.parse(errorText);
-      errorMessage += `: ${errorJson.error || errorText}`;
+      if (errorJson.error?.message) {
+        errorMessage += `: ${errorJson.error.message}`;
+      } else {
+        errorMessage += `: ${errorText}`;
+      }
     } catch (e) {
       errorMessage += `: ${errorText}`;
     }
@@ -41,14 +67,13 @@ async function queryHuggingFace(prompt, token) {
   }
 
   const result = await response.json();
-  
-  // Extract generated text from the returned list of options
-  if (Array.isArray(result) && result[0]?.generated_text) {
-    return result[0].generated_text;
+
+  if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+    return result.candidates[0].content.parts[0].text;
   }
-  
+
   if (result.error) {
-    throw new Error(result.error);
+    throw new Error(result.error.message || JSON.stringify(result.error));
   }
 
   return JSON.stringify(result);
@@ -56,20 +81,20 @@ async function queryHuggingFace(prompt, token) {
 
 // POST endpoint for chat completion
 app.post('/api/chat', async (req, res) => {
-  const { prompt } = req.body;
-  
+  const { prompt, model, image } = req.body;
+
   if (!prompt || typeof prompt !== 'string') {
     return res.status(400).json({ error: "A valid 'prompt' string is required in the request body." });
   }
 
-  console.log(`[API] Processing prompt: "${prompt.slice(0, 50)}${prompt.length > 50 ? '...' : ''}"`);
+  console.log(`[API] Processing prompt: "${prompt.slice(0, 50)}${prompt.length > 50 ? '...' : ''}" using model: ${model || 'gemini-2.5-flash'} (image attached: ${!!image})`);
 
   try {
-    const replyText = await queryHuggingFace(prompt, process.env.HUGGINGFACE_API_TOKEN);
+    const replyText = await queryGemini(prompt, model, image, process.env.GEMINI_API_KEY);
     res.json({ response: replyText });
   } catch (error) {
     console.error("[API Error] Failed to generate response:", error.message);
-    res.status(500).json({ 
+    res.status(500).json({
       error: error.message,
       suggestion: "Check your backend/.env configuration or your internet connectivity."
     });
@@ -78,9 +103,9 @@ app.post('/api/chat', async (req, res) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ 
+  res.json({
     status: 'healthy',
-    tokenConfigured: !!(process.env.HUGGINGFACE_API_TOKEN && process.env.HUGGINGFACE_API_TOKEN !== 'your_huggingface_api_token_here')
+    tokenConfigured: !!(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your_gemini_api_key_here')
   });
 });
 
