@@ -9,8 +9,11 @@ import WelcomeScreen from "./components/WelcomeScreen";
 import MessageList from "./components/MessageList";
 import InputPanel from "./components/InputPanel";
 import ProfileModal from "./components/ProfileModal";
+import SplashScreen from "./components/SplashScreen";
 
 export default function App() {
+	// Splash Screen State
+	const [showSplash, setShowSplash] = useState(true);
 	// Sidebar State
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -419,7 +422,9 @@ Feel free to refine your question or ask me to perform tasks like listing action
 	};
 
 	return (
-		<div className="lakma-container">
+		<>
+			{showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+			<div className="lakma-container">
 			{/* Left Sidebar Component */}
 			<Sidebar
 				sidebarOpen={sidebarOpen}
@@ -502,5 +507,6 @@ Feel free to refine your question or ask me to perform tasks like listing action
 				setUserProfile={setUserProfile}
 			/>
 		</div>
+		</>
 	);
 }
