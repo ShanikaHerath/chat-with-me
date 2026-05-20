@@ -684,12 +684,14 @@ body {
 	letter-spacing: -0.04em;
 	background: linear-gradient(135deg, #ffffff 40%, var(--text-secondary) 100%);
 	-webkit-background-clip: text;
+	background-clip: text;
 	-webkit-text-fill-color: transparent;
 }
 
 .greeting-text span {
 	background: var(--accent-gradient);
 	-webkit-background-clip: text;
+	background-clip: text;
 	-webkit-text-fill-color: transparent;
 	text-shadow: 0 0 40px rgba(59, 130, 246, 0.15);
 }
@@ -703,6 +705,7 @@ body {
 	line-height: 1.1;
 	background: linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 100%);
 	-webkit-background-clip: text;
+	background-clip: text;
 	-webkit-text-fill-color: transparent;
 }
 
