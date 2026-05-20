@@ -1620,15 +1620,30 @@ body {
 		left: -100%;
 	}
 
-	/* Header Compact Styles */
-	.avatar {
-		width: 30px;
-		height: 30px;
-		font-size: 14px;
+	/* ── Header ── */
+	.header {
+		margin: 0.4rem 0.4rem 0.3rem 0.4rem;
+		border-radius: 12px;
 	}
 
+	.header-container {
+		padding: 7px 8px;
+		gap: 6px;
+		flex-wrap: nowrap;
+	}
+
+	/* Avatar — smaller */
+	.avatar {
+		width: 28px;
+		height: 28px;
+		font-size: 12px;
+		flex-shrink: 0;
+	}
+
+	/* Menu toggle icon tighter */
 	.menu-toggle {
-		padding: 3px;
+		padding: 2px;
+		flex-shrink: 0;
 	}
 
 	.menu-toggle svg {
@@ -1636,45 +1651,75 @@ body {
 		height: 18px;
 	}
 
+	/* Title — truncate to single line */
+	.header-info {
+		min-width: 0;
+		flex: 1 1 auto;
+		overflow: hidden;
+	}
+
 	.header-info h1 {
-		font-size: 0.95rem;
+		font-size: 0.85rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.header-info p {
 		display: none;
 	}
 
+	/* Hide the status indicator completely — no room at 360px */
+	.system-status-indicator {
+		display: none !important;
+	}
+
+	/* Right controls — tight gap */
+	.header-right-controls {
+		gap: 0.3rem !important;
+		flex-shrink: 0;
+	}
+
+	/* Model selector — compact with truncated text */
 	.model-selector-btn {
-		font-size: 0.8rem;
-		padding: 0.35rem 0.6rem;
-		gap: 0.25rem;
+		font-size: 0.72rem;
+		padding: 0.3rem 0.5rem;
+		gap: 0.2rem;
+		max-width: 100px;
+	}
+
+	.model-selector-btn span {
+		max-width: 72px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		display: inline-block;
 	}
 
 	.model-selector-btn svg {
-		width: 12px;
-		height: 12px;
+		width: 11px;
+		height: 11px;
+		flex-shrink: 0;
 	}
 
+	/* Theme toggle — smaller circle */
 	.theme-toggle-btn {
-		width: 30px;
-		height: 30px;
+		width: 28px;
+		height: 28px;
+		flex-shrink: 0;
 	}
 
 	.theme-toggle-btn svg {
-		width: 16px;
-		height: 16px;
+		width: 14px;
+		height: 14px;
 	}
 
-	.header-right-controls {
-		gap: 0.4rem !important;
-	}
-
-	/* Fixed Top Modal Dropdown style */
+	/* Model dropdown — fixed full-width overlay so it never clips */
 	.model-dropdown {
 		position: fixed;
-		top: 55px;
-		left: 10px;
-		right: 10px;
+		top: 56px;
+		left: 8px;
+		right: 8px;
 		width: auto;
 		z-index: 1000;
 	}
